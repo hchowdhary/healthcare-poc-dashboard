@@ -1,0 +1,12 @@
+.row {
+	margin-bottom: 0px;
+}
+
+.card .card-content .card-title {
+    line-height: 0px;
+}
+
+.card .card-content {
+    padding: 15px;
+    border-radius: 0 0 2px 2px;
+}

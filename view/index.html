@@ -4,12 +4,64 @@
 	<title>Healthcare Dashboard</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.3.0/d3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-<script sr="main.js"></script>
+
+  <div id="graphs">
+    <div class="row">
+      <div class="col m6">
+        <div class="card small">
+          <div class="card-content">
+            <span class="card-title">User Demographics</span>
+            <div id="userDemographics" style="height: 250px;" ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col m6">
+        <div class="card small">
+          <div class="card-content">
+            <span class="card-title">User Location</span>
+            <div id="userLocation" style="height: 250px;" ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col m6">
+        <div class="card small">
+          <div class="card-content">
+            <span class="card-title">Sale of Devices</span>
+            <div id="fitbitSale" style="height: 250px;" ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col l6">
+        <div class="card small">
+          <div class="card-content">
+            <span class="card-title">Warnings</span>
+            <div id="warnings" style="height: 250px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+	<script src="/javascript/main.js"></script>
+	<script type="text/javascript">
+		for(var i = 5; i <= 70; i++){
+			userDemographicsChartData[0].values.push({x: i, y: Math.random()});
+			userDemographicsChartData[1].values.push({x: i, y: Math.random()});
+		}
+		userDemographicsChart.update();
+	</script>
 </body>
 </html>
