@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var kafka = require('kafka-node');
+var cassandra = require('cassandra-driver');
 
 server.listen(3000);
 
@@ -31,6 +32,9 @@ app.get('/', function (req, res) {
 // 	// console.log(message.topic + " ->> " + message.value);
 // 	io.emit(message.topic, message.value); // Reading Kafka topic value and Kafka message
 // });
+
+// //cassandra configurations
+// var client = new cassandra.Client({contactPoints: ['DIN16000309'], keyspace: 'iot'});
 
 // Define action to take when a websocket connection is established
 io.on('connection', function (socket) {
