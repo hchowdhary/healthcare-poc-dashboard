@@ -28,7 +28,9 @@
         <div class="card small">
           <div class="card-content">
             <span class="card-title">User Location</span>
-            <div id="userLocation" style="height: 250px;" ></div>
+            <div id="userLocation" style="height: 250px;" >
+              <a id="updateData" class="waves-effect waves-light btn">button</a>
+            </div>
           </div>
         </div>
       </div>
@@ -52,16 +54,9 @@
           </div>
         </div>
       </div>
-
     </div>
+  </div>
 
 	<script src="/javascript/main.js"></script>
-	<script type="text/javascript">
-		for(var i = 5; i <= 70; i++){
-			userDemographicsChartData[0].values.push({x: i, y: Math.random()});
-			userDemographicsChartData[1].values.push({x: i, y: Math.random()});
-		}
-		userDemographicsChart.update();
-	</script>
 </body>
 </html>
