@@ -9,6 +9,7 @@
   "author": "Himanshu Chowdhary",
   "license": "ISC",
   "dependencies": {
+    "bower": "^1.7.9",
     "cassandra-driver": "^3.1.5",
     "express": "^4.14.0",
     "kafka-node": "^0.5.8",

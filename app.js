@@ -8,6 +8,7 @@ var cassandra = require('cassandra-driver');
 server.listen(3000);
 
 app.use(express.static(__dirname + '/view'));
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');

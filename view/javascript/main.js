@@ -34,6 +34,6 @@ $('#updateBarChart').click(function(event) {
 	userDemographicsChart.update();
 });
 
-socket.on('userData',fucntion(msg){
+// socket.on('userData',fucntion(msg){
 	
-})
+// })
