@@ -40,8 +40,37 @@ $('#updateBarChart').click(function(event) {
 });
 
 
-
+var diff, count = 0, sum = 0;
 socket.on('warningNotification',function(msg){
 	var data = tupletoArray(msg);
-	console.log(Number(Date.now()) - Number(data[2]))
+	diff = Date.now() - Number(data[2]);
+	sum += diff;
+	count++;
+	salesChartData[0].values.push({x: Date.now(), y: diff});
+	salesChartData[1].values.push({x: Date.now(), y: sum/count});
+	salesChart.update();
 })
+
+var salesChart;
+var salesChartData = [{key: "Fitbit Sales", values: []}, {key: "Predicted Sales", values: []}];
+nv.addGraph(function() {
+		salesChart = nv.models.lineChart()
+							.duration(750);
+
+		salesChart.xAxis
+		  .axisLabel("Timestamp")
+		  .showMaxMin(true)
+		  .tickFormat(d3.format(',0f'));
+
+		salesChart.yAxis
+			  .axisLabel("Sales")
+		  .tickFormat(d3.format(',.1f'));
+
+		d3.select('#fitbitSale')
+				.append('svg')
+		  .datum(salesChartData)
+		 .call(salesChart);
+
+		nv.utils.windowResize(salesChart.update());
+		return salesChart;
+});

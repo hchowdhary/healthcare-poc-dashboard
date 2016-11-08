@@ -13,11 +13,8 @@ var query = "select * from latest_location";
 
 var circleLayer = new L.featureGroup();
 
-L.circle([37.3524, -121.9520], markerProperties).addTo(circleLayer);
-mymap.addLayer(circleLayer);
 // window.setInterval(function(){
 // 	socket.emit('fetch-location', query);
-// 	// console.log('sending query to server');
 // },1500);
 
 socket.on('fetched-latest-location',function(location){
