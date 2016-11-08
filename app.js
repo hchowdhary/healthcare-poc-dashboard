@@ -34,10 +34,24 @@ app.get('/', function (req, res) {
 // 	io.emit(message.topic, message.value); // Reading Kafka topic value and Kafka message
 // });
 
-// //cassandra configurations
-// var client = new cassandra.Client({contactPoints: ['DIN16000309'], keyspace: 'iot'});
+//cassandra configurations
+var client = new cassandra.Client({contactPoints: ['DIN16000309'], keyspace: 'iot'});
 
 // Define action to take when a websocket connection is established
 io.on('connection', function (socket) {
 	console.log("A client is connected.");
+
+	socket.on('fetch-location',function(query){
+		client.execute(query, function (err, result) {
+			if(err){
+				console.log(err);
+			}
+
+			console.log('executing query: ' + query);
+			console.log('processing data');
+
+			io.emit('fetched-latest-location', result.rows);
+			console.log('sent data to latest-location');
+		});
+	});
 });
