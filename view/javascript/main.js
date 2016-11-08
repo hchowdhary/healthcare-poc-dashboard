@@ -39,18 +39,6 @@ $('#updateBarChart').click(function(event) {
 	userDemographicsChart.update();
 });
 
-
-var diff, count = 0, sum = 0;
-socket.on('warningNotification',function(msg){
-	var data = tupletoArray(msg);
-	diff = Date.now() - Number(data[2]);
-	sum += diff;
-	count++;
-	salesChartData[0].values.push({x: Date.now(), y: diff});
-	salesChartData[1].values.push({x: Date.now(), y: sum/count});
-	salesChart.update();
-})
-
 var salesChart;
 var salesChartData = [{key: "Fitbit Sales", values: []}, {key: "Predicted Sales", values: []}];
 nv.addGraph(function() {
@@ -74,3 +62,15 @@ nv.addGraph(function() {
 		nv.utils.windowResize(salesChart.update());
 		return salesChart;
 });
+
+var diff, count = 0, sum = 0;
+socket.on('warningNotification',function(msg){
+	var data = tupletoArray(msg);
+	diff = Date.now() - Number(data[2]);
+	sum += diff;
+	count++;
+	salesChartData[0].values.push({x: Date.now(), y: diff});
+	salesChartData[1].values.push({x: Date.now(), y: sum/count});
+	salesChart.update();
+})
+
