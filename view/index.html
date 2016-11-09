@@ -38,7 +38,16 @@
     </div>
 
     <div class="row">
-      <div class="col m6">
+      <div class="col m5">
+        <div class="card small">
+          <div class="card-content">
+            <span class="card-title">Latency</span>
+            <div id="queryLatency" style="height: 250px;"></div>  
+          </div>
+        </div>
+      </div>
+
+      <div class="col l5">
         <div class="card small">
           <div class="card-content">
             <span class="card-title">Sale of Devices</span>
@@ -50,31 +59,92 @@
       <div class="col l2">
         <div class="card small">
           <div class="card-content">
-            <span class="card-title">Total Users</span>
-            <div id="totalUsers" style="height: 250px;"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col l4">
-        <div class="card small">
-          <div class="card-content">
             <span class="card-title">Warnings</span>
-            <div id="warnings" style="height: 250px;">
-
-              <div id="warningNotification" class="card-panel orange darken-1">
-                <span class="white-text">I am a very simple card. I am good at containing small bits of information.
-                I am convenient because I require little markup to use effectively. I am similar to what is called a panel in other frameworks.
-                </span>
-              </div>
-
-            </div>
-
+            <div id="warnings" style="height: 250px;"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+    <div class="row">
+      <div class="col m9">
+        <div class="card large">
+          <div class="card-content">
+            <span class="card-title">User Location</span>
+            <div id="warningLocation" style="height: 450px;" ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col m3">
+
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Total Users: </span>
+            <span id="totalUsers" class="card-title"> -- </span>
+          </div>
+        </div>
+
+        <div class="card medium">
+          <div class="card-content">
+            <span class="card-title">User Details</span>
+            <div id="warningDetails" style="height: 350px;">
+              <table>
+
+                <tbody>
+                  <tr>
+                    <td>USER ID</td>
+                    <td id="userID">--</td>
+                  </tr>
+                  <tr>
+                    <td>AGE</td>
+                    <td id="age">--</td>
+                  </tr>
+                  <tr>
+                    <td>BODY FAT</td>
+                    <td id="bfp">--</td>
+                  </tr>
+                  <tr>
+                    <td>BMI</td>
+                    <td id="bmi">--</td>
+                  </tr>
+                  <tr>
+                    <td>BLOOD PRESSURE</td>
+                    <td id="bp">--</td>
+                  </tr>
+                  <tr>
+                    <td>DIASTLOIC</td>
+                    <td id="dia">--</td>
+                  </tr>
+                  <tr>
+                    <td>SYSTOLIC</td>
+                    <td id="sys">--</td>
+                  </tr>
+                  <tr>
+                    <td>ACTIVITY LEVEL</td>
+                    <td id="act">--</td>
+                  </tr>
+                  <tr>
+                    <td>GENDER</td>
+                    <td id="gender">--</td>
+                  </tr>
+                  <tr>
+                    <td>HEIGHT</td>
+                    <td id="height">--</td>
+                  </tr>
+                  <tr>
+                    <td>WEIGHT</td>
+                    <td id="weight">--</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
 	<script src="/javascript/main.js"></script>
   <script src="/javascript/map.js"></script>

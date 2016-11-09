@@ -14,3 +14,26 @@
 #warnings {
 	overflow: auto;
 }
+
+.card-panel {
+    transition: box-shadow .25s;
+	padding: 5px 10px 5px 10px;;
+    margin: 0.5rem 0 0 0;
+    border-radius: 2px;
+    animation-name: fade-in;
+	animation-duration: 1.5s;
+}
+
+@keyframes fade-in {
+	0% {opacity: 0; }
+	100% {opacity: 1; }
+}
+
+.modal {
+  max-height: 90%;
+  width: 90%;
+}
+
+#warningDetails {
+  overflow: auto;
+}
