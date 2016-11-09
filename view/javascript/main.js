@@ -3,7 +3,7 @@ var socket = io.connect('http://localhost:3000');
 
 //Convert kafka messages arriving in tuples to arrays.
 var tupletoArray = function(tuple){
-	return arr = tuple.substring(1,tuple.length-1).split(",");
+	return tuple.substring(1,tuple.length-1).split(",");
 };
 
 var userDemographicsChart;
@@ -64,6 +64,7 @@ nv.addGraph(function() {
 });
 
 var diff, count = 0, sum = 0;
+var warningId = 1;
 socket.on('warningNotification',function(msg){
 	var data = tupletoArray(msg);
 	diff = Date.now() - Number(data[2]);
@@ -72,5 +73,8 @@ socket.on('warningNotification',function(msg){
 	salesChartData[0].values.push({x: Date.now(), y: diff});
 	salesChartData[1].values.push({x: Date.now(), y: sum/count});
 	salesChart.update();
-})
+
+	$('#warnings').prepend(`<div id="warning-${warningId}" class="card-panel orange darken-2"></div>`);
+	$(`#warning-{warningId}`).append('span').attr('white-text').text('lolololo');
+});
 
