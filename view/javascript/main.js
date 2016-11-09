@@ -30,9 +30,13 @@ nv.addGraph(function() {
 		return userDemographicsChart;
 });
 
-socket.on('fetched-userDemographicsData', function(arr){
+// window.setInterval(function(){
+// 	socket.emit('fetch-userData', 'select age, gender from user_details;');
+// },2500);
+
+socket.on('fetched-userData', function(arr){
 	userDemographicsChartData = arr;
-	console.log(arr);
+	console.log(userDemographicsChartData);
 	userDemographicsChart.update();
 });
 
@@ -97,9 +101,20 @@ nv.addGraph(function() {
 		return salesChart;
 });
 
+window.setInterval(function(){
+	socket.emit('fetch-salesData', 'select * from sales;');
+},2500);
+
 socket.on('fetched-salesData', function(sales){
-	var salesData = tupletoArray(sales);
-	salesChartData[0].values.push({x: sales[0], y: sales[1]})
+	var count = 1;
+	salesChartData = [{key: "Actual Sales", values: []}];
+	sales.forEach(function(sale){
+		salesChartData[0].values.push({x: sale[1], y: +sale[1]});
+		console.log(sale);
+		count++;
+	});
+	console.log(salesChartData);
+	salesChart.update();
 });
 
 //--------------------------------------------------------WARNING NOTIFICATION----------------------------------------------
@@ -116,7 +131,6 @@ socket.on('warningNotification',function(msg){
 	} else	{
 		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo(('<div></div>').addClass('card-panel red').prependTo('#warnings'));
 	}
-	
 
 });
 
@@ -167,3 +181,4 @@ $(document).ready(function() {
 	});
 
 });// jQuery end
+
