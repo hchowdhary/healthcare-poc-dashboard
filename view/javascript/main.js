@@ -72,9 +72,15 @@ var	parseDate = d3.time.format("%Y-%m-%d").parse;
 socket.on('fetched-salesData', function(sales){
 	var i = 0;
 	salesChartData = [{key: "Actual Sales", values: []}];
+	sales.forEach(function(obj){
+		obj.date = parseDate(obj.date);
+	});
+	sales.sort(function(a,b){
+		return a.date - b.date;
+	});
 	sales.forEach(function(sale){
 		if ( i === 0 ) { sale.count = sale.count - 5;}; // sunbtract the pre-populated number from count
-		salesChartData[0].values.push({x: parseDate(sale.date), y: +sale.count});
+		salesChartData[0].values.push({x: sale.date, y: +sale.count});
 		i++;
 	});
 	//update chart with new data
