@@ -19,7 +19,7 @@ nv.addGraph(function() {
 
 		userDemographicsChart.yAxis
 			  .axisLabel("Count")
-		  .tickFormat(d3.format(',.1f'));
+		  .tickFormat(d3.format(',.0f'));
 
 		d3.select('#userDemographics')
 				.append('svg')
@@ -35,27 +35,21 @@ window.setInterval(function(){
 },3000);
 
 socket.on('fetched-userData', function(arr){
-	// userDemographicsChartData = arr;
-	// console.log(arr);
 	d3.select('#userDemographics svg')
 		  .datum(arr)
 		 .call(userDemographicsChart);
 });
 
 //-------------------------------------------------------------------LATENCY------------------------------------------------
-var warningSum = 0, totalUsersSum = 0, userDemographicsSum = 0, salesSum = 0;
+var warningSum = 0, totalUsersSum = 0;
 var warningCount = 0,
-	totalUsersCount = 0,
-	userDemographicsCount = 0,
-	salesSumCount = 0;
+	totalUsersCount = 0;
 
 var warningDiff = 0,
-	totalUsersDiff =0,
-	userDemographicsDiff = 0,
-	salesSumDiff = 0;
+	totalUsersDiff =0;
 
 var latencyChart;
-var latencyChartData = [{key: "warning", values: []}, {key: "totalUsers", values: []}, {key: "userDemographicsSum", values: []}, {key: "salesSum", values: []}];
+var latencyChartData = [{key: "warning", values: []}, {key: "totalUsers", values: []}];
 nv.addGraph(function() {
 		latencyChart = nv.models.lineChart().duration(750)
 			.useInteractiveGuideline(true);
@@ -87,8 +81,8 @@ nv.addGraph(function() {
 
 		salesChart.xAxis
 		  .axisLabel("Timestamp")
-		  .showMaxMin(true);
-		  // .tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
+		  .showMaxMin(true)
+		  .tickFormat(d3.time.format("%d %b"));
 
 		salesChart.yAxis
 			  .axisLabel("Count")
@@ -107,19 +101,16 @@ window.setInterval(function(){
 	socket.emit('fetch-salesData', 'select * from sales;');
 },5000);
 
+var	parseDate = d3.time.format("%Y-%m-%d").parse;
 socket.on('fetched-salesData', function(sales){
-	var count = 1;
 	salesChartData = [{key: "Actual Sales", values: []}];
 	sales.forEach(function(sale){
-		salesChartData[0].values.push({x: count, y: +sale.count});
-		console.log(sale);
-		count++;
+		salesChartData[0].values.push({x: parseDate(sale.date), y: +sale.count});
 	});
 
 	d3.select('#fitbitSale svg')
 		  .datum(salesChartData)
 		 .call(salesChart);
-	console.log(salesChartData);
 });
 
 //--------------------------------------------------------WARNING NOTIFICATION----------------------------------------------
@@ -128,13 +119,13 @@ socket.on('warningNotification',function(msg){
 	warningDiff = Date.now() - Number(data[2]);
 	warningSum += warningDiff;
 	warningCount++;
-	// salesChartData[0].values.push({x: Date.now(), y: warningSum/warningCount});
-	// salesChart.update();
+	latencyChartData[0].values.push({x: Date.now(), y: warningSum/warningCount});
+	latencyChart.update();
 
 	if(data[1] === "simple") {
-		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo(('<div></div>').addClass('card-panel orange darken-1').prependTo('#warnings'));
+		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo($('<div></div>').addClass('card-panel orange darken-1').prependTo('#warnings'));
 	} else	{
-		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo(('<div></div>').addClass('card-panel red').prependTo('#warnings'));
+		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo($('<div></div>').addClass('card-panel red').prependTo('#warnings'));
 	}
 
 });
