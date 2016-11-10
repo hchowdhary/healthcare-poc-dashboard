@@ -7,10 +7,9 @@ var markerProperties = {
     color: 'none',
     fillColor: '#D0021B',
     fillOpacity: 0.5,
-    radius: 30
+    radius: 180
 };
 var query = "select * from latest_location";
-
 var circleLayer = new L.featureGroup();
 
 window.setInterval(function(){
@@ -18,7 +17,6 @@ window.setInterval(function(){
 },1500);
 
 socket.on('fetched-latest-location',function(location){
-	// console.log('received data, updating map');
 	circleLayer.clearLayers();
 	location.forEach(function(elem){
 		L.circle([elem.lat, elem.long], markerProperties).addTo(circleLayer);
