@@ -103,18 +103,19 @@ nv.addGraph(function() {
 
 window.setInterval(function(){
 	socket.emit('fetch-salesData', 'select * from sales;');
-},2500);
+},5000);
 
 socket.on('fetched-salesData', function(sales){
 	var count = 1;
 	salesChartData = [{key: "Actual Sales", values: []}];
 	sales.forEach(function(sale){
-		salesChartData[0].values.push({x: sale[1], y: +sale[1]});
+		salesChartData[0].values.push({x: count, y: +sale.count});
 		console.log(sale);
 		count++;
 	});
-	console.log(salesChartData);
+
 	salesChart.update();
+	console.log(salesChartData);
 });
 
 //--------------------------------------------------------WARNING NOTIFICATION----------------------------------------------
@@ -123,8 +124,8 @@ socket.on('warningNotification',function(msg){
 	warningDiff = Date.now() - Number(data[2]);
 	warningSum += warningDiff;
 	warningCount++;
-	salesChartData[0].values.push({x: Date.now(), y: warningSum/warningCount});
-	salesChart.update();
+	// salesChartData[0].values.push({x: Date.now(), y: warningSum/warningCount});
+	// salesChart.update();
 
 	if(data[1] === "simple") {
 		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo(('<div></div>').addClass('card-panel orange darken-1').prependTo('#warnings'));
