@@ -13,9 +13,9 @@ var query = "select * from latest_location";
 
 var circleLayer = new L.featureGroup();
 
-// window.setInterval(function(){
-// 	socket.emit('fetch-location', query);
-// },1500);
+window.setInterval(function(){
+	socket.emit('fetch-location', query);
+},1500);
 
 socket.on('fetched-latest-location',function(location){
 	// console.log('received data, updating map');
