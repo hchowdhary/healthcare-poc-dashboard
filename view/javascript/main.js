@@ -11,25 +11,27 @@ var userDemographicsChart;
 var userDemographicsChartData =  [{"key":"Male","color":"#2196f3","values":[]},{"key":"Female","color":"#e91e63","values":[]}];
 nv.addGraph(function() {
 		userDemographicsChart = nv.models.multiBarChart().stacked(true);
-		// x axis
 		userDemographicsChart.xAxis.axisLabel("Age").tickFormat(d3.format(',0f'));
-		// y axis
 		userDemographicsChart.yAxis.axisLabel("Count").tickFormat(d3.format(',.0f'));
-		// bind data to chart
 		d3.select('#userDemographics').append('svg').datum(userDemographicsChartData).call(userDemographicsChart);
-		// update chart on resize
 		nv.utils.windowResize(userDemographicsChart.update());
 		return userDemographicsChart;
 });
 
 //periodically poll cassandra to get user details
-window.setInterval(function(){
-	socket.emit('fetch-userData', 'select age, gender from user_details;');
-},3000);
+// window.setInterval(function(){
+// 	socket.emit('fetch-userData', 'select age, gender from user_details;');
+// },3000);
 
 socket.on('fetched-userData', function(arr){
 	// as soon as a new msg arrives from the socket update the chart
 	d3.select('#userDemographics svg').datum(arr).call(userDemographicsChart);
+	userDemographicsSum += Date.now() - userDemographicsStart;
+	userDemographicsCount++;	
+	latencyChart6Data[0].values.push({x: Date.now(), y: userDemographicsSum/userDemographicsCount});
+	latencyChart6.update();
+	$('#pipeline6-span').text(Math.round(userDemographicsSum/userDemographicsCount*100)/100);
+
 });
 
 //-------------------------------------------------------------LATENCY------------------------------------------------------
@@ -38,7 +40,7 @@ var totalUsersSum = 0,totalUsersCount = 0;
 var userLocationSum = 0, userLocationCount = 0;
 var activityLevelSum = 0, activityLevelCount = 0;
 var currentLocationSum = 0, currentLocationCount = 0;
-var userDemographicsSum = 0, userDemographicsSumCount = 0;
+var userDemographicsSum = 0, userDemographicsCount = 0;
 // Pipeline 1
 var latencyChart1;
 var latencyChart1Data = [{key: "Total Users", values: []}];
@@ -100,6 +102,7 @@ nv.addGraph(function() {
 });
 
 // Pipeline 6
+var userDemographicsStart;
 var latencyChart6;
 var latencyChart6Data = [{key: "User Demographics", values: []}];
 nv.addGraph(function() {
@@ -203,6 +206,9 @@ socket.on('user-list-length', function(total){
 	latencyChart1.update();
 	$('#pipeline1-span').text(Math.round(totalUsersSum/totalUsersCount*100)/100);
 	$('#totalUsers').text(totalUsersCount);
+
+	socket.emit('fetch-userData', 'select age, gender from user_details;');
+	userDemographicsStart = Number(data[1]);
 });
 
 //---------------------------------------------------- JQUERY ------------------------------------------------------
