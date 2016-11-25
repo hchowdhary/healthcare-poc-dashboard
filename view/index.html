@@ -17,6 +17,48 @@
 
   <div id="graphs">
     <div class="row">
+
+      <div class="col m9">
+        <div class="card large">
+          <div class="card-content">
+            <span class="card-title">User Location</span>
+            <div id="userLocation" style="height: 450px;" >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col l3">
+
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Total Users: </span>
+            <span id="totalUsers" class="card-title"> -- </span>
+          </div>
+        </div>
+
+        <div class="card warning-card">
+          <div class="card-content">
+            <span class="card-title">Warnings</span>
+            <a href="#fethced-details"><div id="warnings" style="height: 385px;"></div></a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="row">
+
+<!--       <div class="col m5">
+        <div class="card small">
+          <div class="card-content">
+            <span class="card-title">Latency</span>
+            <div id="queryLatency" style="height: 250px;"></div>  
+          </div>
+        </div>
+      </div> -->
+
       <div class="col m6">
         <div class="card small">
           <div class="card-content">
@@ -29,63 +71,41 @@
       <div class="col m6">
         <div class="card small">
           <div class="card-content">
-            <span class="card-title">User Location</span>
-            <div id="userLocation" style="height: 250px;" >
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col m5">
-        <div class="card small">
-          <div class="card-content">
-            <span class="card-title">Latency</span>
-            <div id="queryLatency" style="height: 250px;"></div>  
-          </div>
-        </div>
-      </div>
-
-      <div class="col l5">
-        <div class="card small">
-          <div class="card-content">
             <span class="card-title">Sale of Devices</span>
             <div id="fitbitSale" style="height: 250px;" ></div>
           </div>
         </div>
       </div>
-
-      <div class="col l2">
-        <div class="card small">
-          <div class="card-content">
-            <span class="card-title">Warnings</span>
-            <div id="warnings" style="height: 250px;"></div>
-          </div>
-        </div>
-      </div>
+      
     </div>
   </div>
 
-    <div class="row">
-      <div class="col m9">
-        <div class="card large">
+    <div class="row" id="fethced-details" >
+      <div class="col m4">
+        <div class="card medium">
           <div class="card-content">
             <span class="card-title">User Location</span>
-            <div id="warningLocation" style="height: 450px;" ></div>
+            <div id="warningLocation" style="height: 350px;" ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col m5">
+        <div class="card hr_bt">
+          <div class="card-content">
+            <span class="card-title">Body Temperature</span>
+            <div id="bodyTemperature" style="height: 170px;" ></div>
+          </div>
+        </div>
+        <div class="card hr_bt">
+          <div class="card-content">
+            <span class="card-title">Heart Rate</span>
+            <div id="heartRate" style="height: 170px;" ></div>
           </div>
         </div>
       </div>
 
       <div class="col m3">
-
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">Total Users: </span>
-            <span id="totalUsers" class="card-title"> -- </span>
-          </div>
-        </div>
-
         <div class="card medium">
           <div class="card-content">
             <span class="card-title">User Details</span>
@@ -138,10 +158,12 @@
                     <td id="weight">--</td>
                   </tr>
                 </tbody>
+
               </table>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 

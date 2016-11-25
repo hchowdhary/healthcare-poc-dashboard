@@ -38,14 +38,14 @@ var warningCount = 0,totalUsersCount = 0;
 
 var latencyChart;
 var latencyChartData = [{key: "Warning", values: []}, {key: "Total Users", values: []}];
-nv.addGraph(function() {
-		latencyChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
-		latencyChart.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
-		latencyChart.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
-		d3.select('#queryLatency').append('svg').datum(latencyChartData).call(latencyChart);
-		nv.utils.windowResize(latencyChart.update());
-		return latencyChart;
-});
+// nv.addGraph(function() {
+// 		latencyChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
+// 		latencyChart.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
+// 		latencyChart.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
+// 		d3.select('#queryLatency').append('svg').datum(latencyChartData).call(latencyChart);
+// 		nv.utils.windowResize(latencyChart.update());
+// 		return latencyChart;
+// });
 
 //--------------------------------------------------------------------SALES OF DEVICES------------------------------------
 var salesChart;
