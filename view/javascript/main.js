@@ -35,10 +35,9 @@ socket.on('fetched-userData', function(arr){
 //-------------------------------------------------------------------LATENCY------------------------------------------------
 var warningSum = 0, totalUsersSum = 0;
 var warningCount = 0,totalUsersCount = 0;
-//var warningDiff = 0,totalUsersDiff =0;
 
 var latencyChart;
-var latencyChartData = [{key: "warning", values: []}, {key: "totalUsers", values: []}];
+var latencyChartData = [{key: "Warning", values: []}, {key: "Total Users", values: []}];
 nv.addGraph(function() {
 		latencyChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
 		latencyChart.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
@@ -71,6 +70,7 @@ window.setInterval(function(){
 var	parseDate = d3.time.format("%Y-%m-%d").parse;
 socket.on('fetched-salesData', function(sales){
 	var i = 0;
+	var prePopulated = 0;
 	salesChartData = [{key: "Actual Sales", values: []}];
 	sales.forEach(function(obj){
 		obj.date = parseDate(obj.date);
@@ -79,7 +79,7 @@ socket.on('fetched-salesData', function(sales){
 		return a.date - b.date;
 	});
 	sales.forEach(function(sale){
-		if ( i === 0 ) { sale.count = sale.count - 5;}; // sunbtract the pre-populated number from count
+		if ( i === 0 ) { sale.count = sale.count - prePopulated;}; // sunbtract the pre-populated number from count
 		salesChartData[0].values.push({x: sale.date, y: +sale.count});
 		i++;
 	});
@@ -117,7 +117,6 @@ socket.on('fetched-warningUserData', function(result){
 	$('#gender').text(result.gender);
 	$('#height').text(result.height);
 	$('#weight').text(result.weight);
-
 });
 
 // ---------------------------------------------Warning map initialization----------------------------------------------------------
@@ -139,7 +138,7 @@ socket.on('fetched-warningLocation', function(result){
 socket.on('user-list-length', function(total){
 	var data = tupletoArray(total);
 	totalUsersSum += Date.now() - Number(data[1]);
-	totalUsersCount++;
+	totalUsersCount++;	
 	latencyChartData[1].values.push({x: Date.now(), y: totalUsersSum/totalUsersCount});
 	latencyChart.update();
 	$('#totalUsers').text(totalUsersCount);
