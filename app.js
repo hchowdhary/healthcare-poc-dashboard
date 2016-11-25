@@ -38,12 +38,12 @@ var client = new cassandra.Client({contactPoints: ['DIN16000309'], keyspace: 'io
 io.on('connection', function (socket) {
 	console.log("A client is connected.");
 
-	socket.on('fetch-location',function(query){
-		client.execute(query, function (err, result) {
-			if(err){console.log(err);}
-			io.emit('fetched-latest-location', result.rows);
-		});
-	});
+	// socket.on('fetch-location',function(query){
+	// 	client.execute(query, function (err, result) {
+	// 		if(err){console.log(err);}
+	// 		io.emit('fetched-latest-location', result.rows);
+	// 	});
+	// });
 
 	socket.on('fetch-warningUserData',function(query){
 		client.execute(query, function (err, result) {
@@ -89,3 +89,12 @@ io.on('connection', function (socket) {
 	});
 
 }); //io.on connection end
+var counter;
+setInterval(function(){
+	counter = Date.now();
+	console.log(counter);
+	client.execute("select * from latest_location", function (err, result) {
+		if(err){console.log(err);}
+		io.emit('fetched-latest-location', {location: result.rows, time: counter});
+	});
+},1500);

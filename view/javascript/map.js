@@ -12,20 +12,20 @@ var markerProperties = {
 var query = "select * from latest_location";
 var circleLayer = new L.featureGroup();
 var mapLatencyStart;
-window.setInterval(function(){
-	mapLatencyStart = Date.now();
-	socket.emit('fetch-location', query);
-},1500);
+// window.setInterval(function(){
+// 	mapLatencyStart = Date.now();
+// 	socket.emit('fetch-location', query);
+// },1500);
 
-socket.on('fetched-latest-location',function(location){
+socket.on('fetched-latest-location',function(msg){
 	circleLayer.clearLayers();
-	location.forEach(function(elem){
+	msg.location.forEach(function(elem){
 		L.circle([elem.lat, elem.long], markerProperties).addTo(circleLayer);
 	});
 	mymap.addLayer(circleLayer);
-	userLocationSum += Date.now() - mapLatencyStart;
+	userLocationSum = Date.now() - msg.time;
 	userLocationCount++;
-	latencyChart3Data[0].values.push({x: Date.now(), y: userLocationSum/userLocationCount});
+	latencyChart3Data[0].values.push({x: Date.now(), y: userLocationSum});
 	latencyChart3.update();
 	$('#pipeline3-span').text(Math.round(userLocationSum/userLocationCount*100)/100);
 });
