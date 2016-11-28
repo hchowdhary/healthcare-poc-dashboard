@@ -10,10 +10,11 @@ server.listen(3000);
 app.use(express.static(__dirname + '/view'));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
-});
-
+app.get('/', function (req, res) { res.sendFile(__dirname + '/index.html');});
+app.get('/totalUsers', function (req, res) { res.sendFile(__dirname + '/view/totalUsers.html');});
+app.get('/warning', function (req, res) { res.sendFile(__dirname + '/view/warning.html');});
+app.get('/userLocation', function (req, res) { res.sendFile(__dirname + '/view/userLocation.html');});
+app.get('/sparkCassandra', function (req, res) { res.sendFile(__dirname + '/view/sparkCassandra.html');});
 
 //Kafka Consumer Config
 var zkserver = 'din16000309:2181'; // Kafka Server Address
@@ -37,13 +38,6 @@ var client = new cassandra.Client({contactPoints: ['DIN16000309'], keyspace: 'io
 // Define action to take when a websocket connection is established
 io.on('connection', function (socket) {
 	console.log("A client is connected.");
-
-	// socket.on('fetch-location',function(query){
-	// 	client.execute(query, function (err, result) {
-	// 		if(err){console.log(err);}
-	// 		io.emit('fetched-latest-location', result.rows);
-	// 	});
-	// });
 
 	socket.on('fetch-warningUserData',function(query){
 		client.execute(query, function (err, result) {

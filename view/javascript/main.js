@@ -45,7 +45,7 @@ var userDemographicsSum = 0, userDemographicsCount = 0;
 var latencyChart1;
 var latencyChart1Data = [{key: "Total Users", values: []}];
 nv.addGraph(function() {
-		latencyChart1 = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
+		latencyChart1 = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
 		latencyChart1.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
 		latencyChart1.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
 		d3.select('#pipeline1').append('svg').datum(latencyChart1Data).call(latencyChart1);
@@ -57,7 +57,7 @@ nv.addGraph(function() {
 var latencyChart2;
 var latencyChart2Data = [{key: "Warning", values: []}];
 nv.addGraph(function() {
-		latencyChart2 = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
+		latencyChart2 = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
 		latencyChart2.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
 		latencyChart2.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
 		d3.select('#pipeline2').append('svg').datum(latencyChart2Data).call(latencyChart2);
@@ -69,7 +69,7 @@ nv.addGraph(function() {
 var latencyChart3;
 var latencyChart3Data = [{key: "User Location", values: []}];
 nv.addGraph(function() {
-		latencyChart3 = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
+		latencyChart3 = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
 		latencyChart3.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
 		latencyChart3.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
 		d3.select('#pipeline3').append('svg').datum(latencyChart3Data).call(latencyChart3);
@@ -81,38 +81,14 @@ nv.addGraph(function() {
 var latencyChart4;
 var latencyChart4Data = [{key: "Activity Level", values: []}];
 nv.addGraph(function() {
-		latencyChart4 = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
+		latencyChart4 = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
 		latencyChart4.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
 		latencyChart4.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
-		d3.select('#pipeline4').append('svg').datum(latencyChart1Data).call(latencyChart4);
+		d3.select('#pipeline4').append('svg').datum(latencyChart4Data).call(latencyChart4);
 		nv.utils.windowResize(latencyChart4.update());
 		return latencyChart4;
 });
 
-// Pipeline 5
-var latencyChart5;
-var latencyChart5Data = [{key: "Current Location", values: []}];
-nv.addGraph(function() {
-		latencyChart5 = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
-		latencyChart5.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
-		latencyChart5.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
-		d3.select('#pipeline5').append('svg').datum(latencyChart1Data).call(latencyChart5);
-		nv.utils.windowResize(latencyChart5.update());
-		return latencyChart5;
-});
-
-// Pipeline 6
-var userDemographicsStart;
-var latencyChart6;
-var latencyChart6Data = [{key: "User Demographics", values: []}];
-nv.addGraph(function() {
-		latencyChart6 = nv.models.lineChart().duration(750).useInteractiveGuideline(true);
-		latencyChart6.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
-		latencyChart6.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
-		d3.select('#pipeline6').append('svg').datum(latencyChart6Data).call(latencyChart6);
-		nv.utils.windowResize(latencyChart6.update());
-		return latencyChart6;
-});
 
 //--------------------------------------------------------------------SALES OF DEVICES------------------------------------
 var salesChart;
@@ -181,6 +157,31 @@ socket.on('fetched-warningUserData', function(result){
 	$('#height').text(result.height);
 	$('#weight').text(result.weight);
 });
+
+// ---------------------------------------- FETCH USER HR FROM CASSANDRA -----------------------------------------
+var userHeartRateChart;
+var userHeartRateChartData =  [{key: "Heart Rate", color: "#f44336", values: []}];
+nv.addGraph(function() {
+		userHeartRateChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
+		userHeartRateChart.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
+		userHeartRateChart.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
+		d3.select('#heartRate').append('svg').datum(userHeartRateChartData).call(userHeartRateChart);
+		nv.utils.windowResize(userHeartRateChart.update());
+		return userHeartRateChart;
+});
+
+// ---------------------------------------- FETCH USER BODY TEMP FROM CASSANDRA -----------------------------------------
+var userBodyTempChart;
+var userBodyTempChartData =  [{key: "Body Temp", color: "#ff9800", values: []}];
+nv.addGraph(function() {
+		userBodyTempChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
+		userBodyTempChart.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
+		userBodyTempChart.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
+		d3.select('#bodyTemperature').append('svg').datum(userBodyTempChartData).call(userBodyTempChart);
+		nv.utils.windowResize(userBodyTempChart.update());
+		return userBodyTempChart;
+});
+
 
 // ---------------------------------------------Warning map initialization----------------------------------------------------------
 var warningMap = L.map('warningLocation').setView([37.3541, -121.9552], 15);
