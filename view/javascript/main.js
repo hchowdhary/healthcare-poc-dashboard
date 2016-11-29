@@ -32,7 +32,7 @@ nv.addGraph(function() {
 });
 
 socket.on("update-totalUsersLatency",function(arr){
-	console.log(arr);
+	// console.log(arr);
 	latencyChart1Data[0].values = JSON.parse(JSON.stringify(arr.actual));
 	latencyChart1.update();
 	$('#pipeline1-span').text(arr.avg);
@@ -51,31 +51,31 @@ nv.addGraph(function() {
 });
 
 socket.on("update-warningLatency",function(arr){
-	console.log(arr.actual);
+	// console.log(arr.actual);
 	latencyChart2Data[0].values = JSON.parse(JSON.stringify(arr.actual));
 	latencyChart2.update();
 	$('#pipeline2-span').text(arr.avg);
 });
 
 // Pipeline 3
-var latencyChart3;
-var latencyChart3Data = [{key: "POS Data", values: []}];
-nv.addGraph(function() {
-		latencyChart3 = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
-		latencyChart3.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
-		latencyChart3.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
-		d3.select('#pipeline3').append('svg').datum(latencyChart3Data).call(latencyChart3);
-		nv.utils.windowResize(latencyChart3.update());
-		return latencyChart3;
-});
+// var latencyChart3;
+// var latencyChart3Data = [{key: "POS Data", values: []}];
+// nv.addGraph(function() {
+// 		latencyChart3 = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
+// 		latencyChart3.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
+// 		latencyChart3.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
+// 		d3.select('#pipeline3').append('svg').datum(latencyChart3Data).call(latencyChart3);
+// 		nv.utils.windowResize(latencyChart3.update());
+// 		return latencyChart3;
+// });
 
-socket.on("update-posdataLatency", function(arr){
-	// console.log(arr);
-	latencyChart3Data[0].values = arr.actual;
-	latencyChart3.update();
-	$('#pipeline3-span').text(arr.avg);
-	// console.log(arr.avg);
-});
+// socket.on("update-posdataLatency", function(arr){
+// 	// console.log(arr);
+// 	latencyChart3Data[0].values = arr.actual;
+// 	latencyChart3.update();
+// 	$('#pipeline3-span').text(arr.avg);
+// 	// console.log(arr.avg);
+// });
 
 // Pipeline 4
 var latencyChart4;
@@ -140,21 +140,21 @@ socket.on('warningNotification',function(msg){
 });
 
 //------------------------------------------------------------- USER ACTIVITY -------------------------------------
-var userActivityChart;
-var userActivityChartData = [{key: "Users by Activity", values: []}];
-nv.addGraph(function() {
-	userActivityChart = nv.models.multiBarChart().showControls(false); //shwocontrols false to remove the switch 
-	userActivityChart.xAxis.axisLabel("Timestamp");
-	userActivityChart.yAxis.axisLabel("Count").tickFormat(d3.format(',.1f'));
-	d3.select('#usersActivityLevel').append('svg').datum(userActivityChartData).call(userActivityChart);
-	nv.utils.windowResize(userActivityChart.update());
-	return userActivityChart;
-});
+// var userActivityChart;
+// var userActivityChartData = [{key: "Users by Activity", values: []}];
+// nv.addGraph(function() {
+// 	userActivityChart = nv.models.multiBarChart().showControls(false); //shwocontrols false to remove the switch 
+// 	userActivityChart.xAxis.axisLabel("Timestamp");
+// 	userActivityChart.yAxis.axisLabel("Count").tickFormat(d3.format(',.1f'));
+// 	d3.select('#usersActivityLevel').append('svg').datum(userActivityChartData).call(userActivityChart);
+// 	nv.utils.windowResize(userActivityChart.update());
+// 	return userActivityChart;
+// });
 
-socket.on("user-activity-category", function(data){
-	userActivityChartData[0].values = JSON.parse(JSON.stringify(data));
-	userActivityChart.update();
-});
+// socket.on("user-activity-category", function(data){
+// 	userActivityChartData[0].values = JSON.parse(JSON.stringify(data));
+// 	userActivityChart.update();
+// });
 // ---------------------------------------- FETCH USER DATA FROM CASSANDRA -----------------------------------------
 socket.on('fetched-warningUserData', function(result){
 	$('#userID').text(result.user_id.substring(0,16));

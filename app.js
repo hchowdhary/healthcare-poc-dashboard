@@ -37,9 +37,11 @@ var warningMsg;
 var totalUsersMsg;
 var userActivityMsg;
 var totalUsers = 0;
-var userActivityData = [];
-var userActivityConsolidated;
+// var userActivityData = [];
+// var userActivityConsolidated;
 var userActivityLatencyIgnore = 5;
+var warningLatencyIgnore = 5;
+var totalUsersLatencyIgnore = 5;
 // Kafka consumer action definitions
 consumer.on('message', function (message) {
 	// Near Real Time
@@ -50,22 +52,26 @@ consumer.on('message', function (message) {
 		// console.log(warningMsg);
 		io.emit("warningNotification",{userID : warningMsg[0], type : warningMsg[1]});
 
-		warningLatency.push({x: Date.now(), y: Date.now() - Number(warningMsg[2])});
-		warningLatencyAvg = warningLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/warningLatency.length;
-		io.emit("update-warningLatency", {actual: warningLatency, avg: Math.round(warningLatencyAvg*100)/100});		
+		if( warningLatencyIgnore < 0){
+			warningLatency.push({x: Date.now(), y: Date.now() - Number(warningMsg[2])});
+			warningLatencyAvg = warningLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/warningLatency.length;
+			io.emit("update-warningLatency", {actual: warningLatency, avg: Math.round(warningLatencyAvg*100)/100});	
+		}
+		warningLatencyIgnore--;
+			
 	}
 	// Lambda 
 	if(message.topic === "user-activity-category"){
 		// console.log(message.topic + " --> " + message.value);
 
 		userActivityMsg = tupletoArray(message.value);
-		// console.log(userActivityMsg);
-		userActivityData.push({userID: userActivityMsg[0], type: userActivityMsg[1]});
-		userActivityConsolidated = _(_(userActivityData).groupBy("type")).map(function(g, key) {return { x: key, y: g.length};});
-		io.emit("user-activity-category", userActivityConsolidated);
+		// // console.log(userActivityMsg);
+		// userActivityData.push({userID: userActivityMsg[0], type: userActivityMsg[1]});
+		// userActivityConsolidated = _(_(userActivityData).groupBy("type")).map(function(g, key) {return { x: key, y: g.length};});
+		// io.emit("user-activity-category", userActivityConsolidated);
 
 		if ( userActivityLatencyIgnore <0){
-			userActivityLatency.push({x: Date.now(), y: Date.now() - Number(userActivityMsg[2])});
+			userActivityLatency.push({x: Date.now(), y: Date.now() - Number(userActivityMsg[0])});
 			userActivityLatencyAvg = userActivityLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/userActivityLatency.length;
 			io.emit("update-userActivityLatency", {actual: userActivityLatency, avg: Math.round(userActivityLatencyAvg*100)/100});
 		}
@@ -80,9 +86,13 @@ consumer.on('message', function (message) {
 		// console.log(totalUsersMsg);
 		io.emit("user-list-length",++totalUsers);
 
-		totalUsersLatency.push({x: Date.now(), y: Math.abs(Date.now() - Number(totalUsersMsg[1]))});
-		totalUsersLatencyAvg = totalUsersLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/totalUsersLatency.length;
-		io.emit("update-totalUsersLatency", {actual: totalUsersLatency, avg: Math.round(totalUsersLatencyAvg*100)/100});
+		if (totalUsersLatencyIgnore < 0){
+			totalUsersLatency.push({x: Date.now(), y: Math.abs(Date.now() - Number(totalUsersMsg[1]))});
+			totalUsersLatencyAvg = totalUsersLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/totalUsersLatency.length;
+			io.emit("update-totalUsersLatency", {actual: totalUsersLatency, avg: Math.round(totalUsersLatencyAvg*100)/100});
+		}
+		totalUsersLatencyIgnore--;
+		
 	}
 	
 });
@@ -164,13 +174,13 @@ setInterval(function(){
 
 var salesStart;
 setInterval(function(){
-	salesStart = Date.now();
+	//salesStart = Date.now();
 	client.execute('select * from sales;', function (err, result) {
 		if(err){console.log(err);}
 		io.emit('fetched-salesData', result.rows);
-		posdataLatency.push({x: Date.now(), y: Date.now() - salesStart});
-		posdataLatencyAvg = posdataLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/posdataLatency.length;
+		//posdataLatency.push({x: Date.now(), y: Date.now() - salesStart});
+		//posdataLatencyAvg = posdataLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/posdataLatency.length;
 		// console.log(Math.round(posdataLatencyAvg*100)/100);
-		io.emit("update-posdataLatency", {actual: posdataLatency, avg: Math.round(posdataLatencyAvg*100)/100});
+		//io.emit("update-posdataLatency", {actual: posdataLatency, avg: Math.round(posdataLatencyAvg*100)/100});
 	});
 },3500);
