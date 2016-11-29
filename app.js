@@ -68,13 +68,6 @@ consumer.on('message', function (message) {
 	// Lambda 
 	if(message.topic === "user-activity-category"){
 		// console.log(message.topic + " --> " + message.value);
-
-		// userActivityMsg = tupletoArray(message.value);
-		// // console.log(userActivityMsg);
-		// userActivityData.push({userID: userActivityMsg[0], type: userActivityMsg[1]});
-		// userActivityConsolidated = _(_(userActivityData).groupBy("type")).map(function(g, key) {return { x: key, y: g.length};});
-		// io.emit("user-activity-category", userActivityConsolidated);
-
 		if ( userActivityLatencyIgnore <0){
 			userActivityLatency.push({x: Date.now(), y: Date.now() - Number(message.value)});
 			userActivityLatencyAvg = userActivityLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/userActivityLatency.length;
@@ -191,9 +184,5 @@ setInterval(function(){
 	client.execute('select * from sales;', function (err, result) {
 		if(err){console.log(err);}
 		io.emit('fetched-salesData', result.rows);
-		//posdataLatency.push({x: Date.now(), y: Date.now() - salesStart});
-		//posdataLatencyAvg = posdataLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/posdataLatency.length;
-		// console.log(Math.round(posdataLatencyAvg*100)/100);
-		//io.emit("update-posdataLatency", {actual: posdataLatency, avg: Math.round(posdataLatencyAvg*100)/100});
 	});
 },3500);
