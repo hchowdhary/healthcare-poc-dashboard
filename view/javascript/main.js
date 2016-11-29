@@ -15,14 +15,7 @@ nv.addGraph(function() {
 });
 
 socket.on('fetched-userData', function(arr){
-	// as soon as a new msg arrives from the socket update the chart
 	d3.select('#userDemographics svg').datum(arr).call(userDemographicsChart);
-	// userDemographicsSum += Date.now() - userDemographicsStart;
-	// userDemographicsCount++;	
-	// latencyChart6Data[0].values.push({x: Date.now(), y: userDemographicsSum/userDemographicsCount});
-	// latencyChart6.update();
-	// $('#pipeline6-span').text(Math.round(userDemographicsSum/userDemographicsCount*100)/100);
-
 });
 
 //-------------------------------------------------------------LATENCY------------------------------------------------------
@@ -96,11 +89,11 @@ nv.addGraph(function() {
 		return latencyChart4;
 });
 
-// socket.on("update-userActivityLatency",function(arr){
-// 	latencyChart4Data[0].values = arr.acutal;
-// 	latencyChart4.update();
-// 	$('#pipeline4-span').text(arr.avg);
-// });
+socket.on("update-userActivityLatency",function(arr){
+	latencyChart4Data[0].values = JSON.parse(JSON.stringify(arr.actual));
+	latencyChart4.update();
+	$('#pipeline4-span').text(arr.avg);
+});
 
 //--------------------------------------------------------------------SALES OF DEVICES------------------------------------
 var salesChart;
@@ -114,9 +107,6 @@ nv.addGraph(function() {
 	return salesChart;
 });
 
-window.setInterval(function(){
-	socket.emit('fetch-salesData', 'select * from sales;');
-},5000);
 // parse date function
 var	parseDate = d3.time.format("%Y-%m-%d").parse;
 socket.on('fetched-salesData', function(sales){
@@ -149,7 +139,22 @@ socket.on('warningNotification',function(msg){
 
 });
 
+//------------------------------------------------------------- USER ACTIVITY -------------------------------------
+var userActivityChart;
+var userActivityChartData = [{key: "Users by Activity", values: []}];
+nv.addGraph(function() {
+	userActivityChart = nv.models.multiBarChart().showControls(false); //shwocontrols false to remove the switch 
+	userActivityChart.xAxis.axisLabel("Timestamp");
+	userActivityChart.yAxis.axisLabel("Count").tickFormat(d3.format(',.1f'));
+	d3.select('#usersActivityLevel').append('svg').datum(userActivityChartData).call(userActivityChart);
+	nv.utils.windowResize(userActivityChart.update());
+	return userActivityChart;
+});
 
+socket.on("user-activity-category", function(data){
+	userActivityChartData[0].values = JSON.parse(JSON.stringify(data));
+	userActivityChart.update();
+});
 // ---------------------------------------- FETCH USER DATA FROM CASSANDRA -----------------------------------------
 socket.on('fetched-warningUserData', function(result){
 	$('#userID').text(result.user_id.substring(0,16));
@@ -220,18 +225,7 @@ socket.on('fetched-warningLocation', function(result){
 
 //----------------------------------------------- TOTAL USERS ------------------------------------------------------
 socket.on('user-list-length', function(count){
-	// console.log('total users :' + count);
-
-	// var data = tupletoArray(total);
-	// totalUsersSum += Date.now() - Number(data[1]);
-	// totalUsersCount++;	
-	// latencyChart1Data[0].values.push({x: Date.now(), y: totalUsersSum/totalUsersCount});
-	// latencyChart1.update();
-	// $('#pipeline1-span').text(Math.round(totalUsersSum/totalUsersCount*100)/100);
 	$('#totalUsers').text(count);
-
-	// socket.emit('fetch-userData', 'select age, gender from user_details;');
-	// userDemographicsStart = Number(data[1]);
 });
 
 //---------------------------------------------------- JQUERY ------------------------------------------------------

@@ -4,6 +4,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var kafka = require('kafka-node');
 var cassandra = require('cassandra-driver');
+var _ = require('underscore');
 
 server.listen(3000);
 // Routing
@@ -36,44 +37,50 @@ var warningMsg;
 var totalUsersMsg;
 var userActivityMsg;
 var totalUsers = 0;
+var userActivityData = [];
+var userActivityConsolidated;
+var userActivityLatencyIgnore = 5;
 // Kafka consumer action definitions
 consumer.on('message', function (message) {
 	// Near Real Time
 	if(message.topic === "warningNotification") {
-		console.log(message.topic + " --> " + message.value);
+		// console.log(message.topic + " --> " + message.value);
 
 		warningMsg = tupletoArray(message.value);
 		// console.log(warningMsg);
 		io.emit("warningNotification",{userID : warningMsg[0], type : warningMsg[1]});
 
 		warningLatency.push({x: Date.now(), y: Date.now() - Number(warningMsg[2])});
-		console.log(warningLatency.length);
 		warningLatencyAvg = warningLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/warningLatency.length;
 		io.emit("update-warningLatency", {actual: warningLatency, avg: Math.round(warningLatencyAvg*100)/100});		
 	}
 	// Lambda 
 	if(message.topic === "user-activity-category"){
-		console.log(message.topic + " --> " + message.value);
+		// console.log(message.topic + " --> " + message.value);
 
 		userActivityMsg = tupletoArray(message.value);
 		// console.log(userActivityMsg);
-		io.emit("user-activity-category",{userID : userActivityMsg[0], type : userActivityMsg[1]});
+		userActivityData.push({userID: userActivityMsg[0], type: userActivityMsg[1]});
+		userActivityConsolidated = _(_(userActivityData).groupBy("type")).map(function(g, key) {return { x: key, y: g.length};});
+		io.emit("user-activity-category", userActivityConsolidated);
 
-		userActivityLatency.push({x: Date.now(), y: Date.now() - Number(userActivityMsg[2])});
-		console.log(userActivityLatency.length);
-		userActivityLatencyAvg = userActivityLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/userActivityLatency.length;
-		io.emit("update-userActivityLatency", {actual: userActivityLatency, avg: Math.round(userActivityLatencyAvg*100)/100});
+		if ( userActivityLatencyIgnore <0){
+			userActivityLatency.push({x: Date.now(), y: Date.now() - Number(userActivityMsg[2])});
+			userActivityLatencyAvg = userActivityLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/userActivityLatency.length;
+			io.emit("update-userActivityLatency", {actual: userActivityLatency, avg: Math.round(userActivityLatencyAvg*100)/100});
+		}
+		userActivityLatencyIgnore--;
+		
 	}
 	// Real Time
 	if(message.topic === "user-list-length"){
-		console.log(message.topic + " --> " + message.value);
+		// console.log(message.topic + " --> " + message.value);
 
 		totalUsersMsg = tupletoArray(message.value);
 		// console.log(totalUsersMsg);
 		io.emit("user-list-length",++totalUsers);
 
 		totalUsersLatency.push({x: Date.now(), y: Math.abs(Date.now() - Number(totalUsersMsg[1]))});
-		console.log(totalUsersLatency.length);
 		totalUsersLatencyAvg = totalUsersLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/totalUsersLatency.length;
 		io.emit("update-totalUsersLatency", {actual: totalUsersLatency, avg: Math.round(totalUsersLatencyAvg*100)/100});
 	}
@@ -121,7 +128,6 @@ var posdataLatency = [];
 var posdataLatencyAvg = 0;
 var userActivityLatency = [];
 var userActivityLatencyAvg = 0;
-//------------------------------------------------------------ REAL TIME --------------------------------------------
 
 //------------------------------------------------------- NODE POLLING CASSANDRA ------------------------------------
 setInterval(function(){
