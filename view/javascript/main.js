@@ -26,12 +26,6 @@ socket.on('fetched-userData', function(arr){
 });
 
 //-------------------------------------------------------------LATENCY------------------------------------------------------
-var warningSum = 0, warningCount = 0;
-var totalUsersSum = 0,totalUsersCount = 0;
-var userLocationSum = 0, userLocationCount = 0;
-var activityLevelSum = 0, activityLevelCount = 0;
-var currentLocationSum = 0, currentLocationCount = 0;
-var userDemographicsSum = 0, userDemographicsCount = 0;
 // Pipeline 1
 var latencyChart1;
 var latencyChart1Data = [{key: "Total Users", values: []}];
@@ -42,6 +36,13 @@ nv.addGraph(function() {
 		d3.select('#pipeline1').append('svg').datum(latencyChart1Data).call(latencyChart1);
 		nv.utils.windowResize(latencyChart1.update());
 		return latencyChart1;
+});
+
+socket.on("update-totalUsersLatency",function(arr){
+	console.log(arr);
+	latencyChart1Data[0].values = JSON.parse(JSON.stringify(arr.actual));
+	latencyChart1.update();
+	$('#pipeline1-span').text(arr.avg);
 });
 
 // Pipeline 2
@@ -56,9 +57,16 @@ nv.addGraph(function() {
 		return latencyChart2;
 });
 
+socket.on("update-warningLatency",function(arr){
+	console.log(arr.actual);
+	latencyChart2Data[0].values = JSON.parse(JSON.stringify(arr.actual));
+	latencyChart2.update();
+	$('#pipeline2-span').text(arr.avg);
+});
+
 // Pipeline 3
 var latencyChart3;
-var latencyChart3Data = [{key: "User Location", values: []}];
+var latencyChart3Data = [{key: "POS Data", values: []}];
 nv.addGraph(function() {
 		latencyChart3 = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
 		latencyChart3.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
@@ -66,6 +74,14 @@ nv.addGraph(function() {
 		d3.select('#pipeline3').append('svg').datum(latencyChart3Data).call(latencyChart3);
 		nv.utils.windowResize(latencyChart3.update());
 		return latencyChart3;
+});
+
+socket.on("update-posdataLatency", function(arr){
+	// console.log(arr);
+	latencyChart3Data[0].values = arr.actual;
+	latencyChart3.update();
+	$('#pipeline3-span').text(arr.avg);
+	// console.log(arr.avg);
 });
 
 // Pipeline 4
@@ -80,6 +96,11 @@ nv.addGraph(function() {
 		return latencyChart4;
 });
 
+// socket.on("update-userActivityLatency",function(arr){
+// 	latencyChart4Data[0].values = arr.acutal;
+// 	latencyChart4.update();
+// 	$('#pipeline4-span').text(arr.avg);
+// });
 
 //--------------------------------------------------------------------SALES OF DEVICES------------------------------------
 var salesChart;
@@ -119,16 +140,11 @@ socket.on('fetched-salesData', function(sales){
 
 //--------------------------------------------------------WARNING NOTIFICATION----------------------------------------------
 socket.on('warningNotification',function(msg){
-	var data = tupletoArray(msg);
-	warningSum += Date.now() - Number(data[2]);
-	warningCount++;
-	latencyChart2Data[0].values.push({x: Date.now(), y: warningSum/warningCount});
-	latencyChart2.update();
-	$('#pipeline2-span').text(Math.round(warningSum/warningCount*100)/100);
-	if(data[1] === "simple") {
-		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo($('<div></div>').addClass('card-panel orange darken-1').prependTo('#warnings'));
+	// console.log("warning : " + msg);
+	if(msg.type === "simple") {
+		$('<span></span>').addClass('white-text').text(`${msg.userID}`).appendTo($('<div></div>').addClass('card-panel orange darken-1').prependTo('#warnings'));
 	} else	{
-		$('<span></span>').addClass('white-text').text(`${data[0]}`).appendTo($('<div></div>').addClass('card-panel red').prependTo('#warnings'));
+		$('<span></span>').addClass('white-text').text(`${msg.userID}`).appendTo($('<div></div>').addClass('card-panel red').prependTo('#warnings'));
 	}
 
 });
@@ -203,16 +219,18 @@ socket.on('fetched-warningLocation', function(result){
 
 
 //----------------------------------------------- TOTAL USERS ------------------------------------------------------
-socket.on('user-list-length', function(total){
-	var data = tupletoArray(total);
-	totalUsersSum += Date.now() - Number(data[1]);
-	totalUsersCount++;	
-	latencyChart1Data[0].values.push({x: Date.now(), y: totalUsersSum/totalUsersCount});
-	latencyChart1.update();
-	$('#pipeline1-span').text(Math.round(totalUsersSum/totalUsersCount*100)/100);
-	$('#totalUsers').text(totalUsersCount);
+socket.on('user-list-length', function(count){
+	// console.log('total users :' + count);
 
-	socket.emit('fetch-userData', 'select age, gender from user_details;');
+	// var data = tupletoArray(total);
+	// totalUsersSum += Date.now() - Number(data[1]);
+	// totalUsersCount++;	
+	// latencyChart1Data[0].values.push({x: Date.now(), y: totalUsersSum/totalUsersCount});
+	// latencyChart1.update();
+	// $('#pipeline1-span').text(Math.round(totalUsersSum/totalUsersCount*100)/100);
+	$('#totalUsers').text(count);
+
+	// socket.emit('fetch-userData', 'select age, gender from user_details;');
 	// userDemographicsStart = Number(data[1]);
 });
 
@@ -225,3 +243,6 @@ $(document).ready(function() {
 
 });// jQuery end
 
+socket.on("user-activity-category", function(msg){
+	// console.log("activity :" + msg);
+});

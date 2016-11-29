@@ -19,13 +19,13 @@ var mapLatencyStart;
 
 socket.on('fetched-latest-location',function(msg){
 	circleLayer.clearLayers();
-	msg.location.forEach(function(elem){
+	msg.forEach(function(elem){
 		L.circle([elem.lat, elem.long], markerProperties).addTo(circleLayer);
 	});
 	mymap.addLayer(circleLayer);
-	userLocationSum = Date.now() - msg.time;
-	userLocationCount++;
-	latencyChart3Data[0].values.push({x: Date.now(), y: userLocationSum});
-	latencyChart3.update();
-	$('#pipeline3-span').text(Math.round(userLocationSum/userLocationCount*100)/100);
+	// userLocationSum = Date.now() - msg.time;
+	// userLocationCount++;
+	// latencyChart3Data[0].values.push({x: Date.now(), y: userLocationSum});
+	// latencyChart3.update();
+	// $('#pipeline3-span').text(Math.round(userLocationSum/userLocationCount*100)/100);
 });
