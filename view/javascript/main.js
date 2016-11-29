@@ -1,10 +1,6 @@
 // Initialize websocket connection
 var socket = io.connect('http://din16000602:3000');
 
-//Convert kafka messages arriving in tuples to arrays.
-var tupletoArray = function(tuple){
-	return tuple.substring(1,tuple.length-1).split(",");
-};
 
 //------------------------------------------------------ USER DEMOGRAPHICS -----------------------------------------------
 var userDemographicsChart;
@@ -18,19 +14,14 @@ nv.addGraph(function() {
 		return userDemographicsChart;
 });
 
-//periodically poll cassandra to get user details
-// window.setInterval(function(){
-// 	socket.emit('fetch-userData', 'select age, gender from user_details;');
-// },3000);
-
 socket.on('fetched-userData', function(arr){
 	// as soon as a new msg arrives from the socket update the chart
 	d3.select('#userDemographics svg').datum(arr).call(userDemographicsChart);
-	userDemographicsSum += Date.now() - userDemographicsStart;
-	userDemographicsCount++;	
-	latencyChart6Data[0].values.push({x: Date.now(), y: userDemographicsSum/userDemographicsCount});
-	latencyChart6.update();
-	$('#pipeline6-span').text(Math.round(userDemographicsSum/userDemographicsCount*100)/100);
+	// userDemographicsSum += Date.now() - userDemographicsStart;
+	// userDemographicsCount++;	
+	// latencyChart6Data[0].values.push({x: Date.now(), y: userDemographicsSum/userDemographicsCount});
+	// latencyChart6.update();
+	// $('#pipeline6-span').text(Math.round(userDemographicsSum/userDemographicsCount*100)/100);
 
 });
 
@@ -162,7 +153,10 @@ socket.on('fetched-warningUserData', function(result){
 var userHeartRateChart;
 var userHeartRateChartData =  [{key: "Heart Rate", color: "#f44336", values: []}];
 nv.addGraph(function() {
-		userHeartRateChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
+		userHeartRateChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40})
+								.x(function(d){return d.time})
+								.y(function(d){return d.pulse});
+		// userHeartRateChart.tooltip.keyFormatter(function(d){return 26356;});
 		userHeartRateChart.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
 		userHeartRateChart.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
 		d3.select('#heartRate').append('svg').datum(userHeartRateChartData).call(userHeartRateChart);
@@ -170,11 +164,18 @@ nv.addGraph(function() {
 		return userHeartRateChart;
 });
 
+socket.on('fetched-hr',function(hr){
+	userHeartRateChartData[0].values = hr;
+	userHeartRateChart.update();
+});
+
 // ---------------------------------------- FETCH USER BODY TEMP FROM CASSANDRA -----------------------------------------
 var userBodyTempChart;
 var userBodyTempChartData =  [{key: "Body Temp", color: "#ff9800", values: []}];
 nv.addGraph(function() {
-		userBodyTempChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40});
+		userBodyTempChart = nv.models.lineChart().duration(750).useInteractiveGuideline(true).margin({right:40})
+								.x(function(d){return d.time})
+								.y(function(d){return d.temp});
 		userBodyTempChart.xAxis.axisLabel("Timestamp").tickFormat(function(d){ return d3.time.format("%X")(new Date(d));});
 		userBodyTempChart.yAxis.axisLabel("Latency").tickFormat(d3.format(',.2f'));
 		d3.select('#bodyTemperature').append('svg').datum(userBodyTempChartData).call(userBodyTempChart);
@@ -182,7 +183,10 @@ nv.addGraph(function() {
 		return userBodyTempChart;
 });
 
-
+socket.on('fetched-bodyTemp',function(bodyTemp){
+	userBodyTempChartData[0].values = bodyTemp;
+	userBodyTempChart.update();
+});
 // ---------------------------------------------Warning map initialization----------------------------------------------------------
 var warningMap = L.map('warningLocation').setView([37.3541, -121.9552], 15);
 L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
@@ -209,15 +213,14 @@ socket.on('user-list-length', function(total){
 	$('#totalUsers').text(totalUsersCount);
 
 	socket.emit('fetch-userData', 'select age, gender from user_details;');
-	userDemographicsStart = Number(data[1]);
+	// userDemographicsStart = Number(data[1]);
 });
 
 //---------------------------------------------------- JQUERY ------------------------------------------------------
 $(document).ready(function() {
 
 	$('#warnings').on("click", "div.card-panel" ,function(){
-		socket.emit('fetch-warningUserData', `select * from user_details where user_id='${$(this).text().trim()}';`);
-		socket.emit('fetch-warningLocation', `select * from latest_location where user_id='${$(this).text().trim()}';`);
+		socket.emit('fetch-warningData', `${$(this).text().trim()}`);
 	});
 
 });// jQuery end
