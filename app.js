@@ -41,7 +41,7 @@ var totalUsers = 0;
 // var userActivityConsolidated;
 var userActivityLatencyIgnore = 5;
 var warningLatencyIgnore = 5;
-var totalUsersLatencyIgnore = 5;
+var totalUsersLatencyIgnore = 3;
 // Kafka consumer action definitions
 consumer.on('message', function (message) {
 	// Near Real Time
@@ -58,26 +58,36 @@ consumer.on('message', function (message) {
 			io.emit("update-warningLatency", {actual: warningLatency, avg: Math.round(warningLatencyAvg*100)/100});	
 		}
 		warningLatencyIgnore--;
+		if(warningLatency.length == 50){
+			warningLatency.shift();
+		}
 			
 	}
+
+
 	// Lambda 
 	if(message.topic === "user-activity-category"){
 		// console.log(message.topic + " --> " + message.value);
 
-		userActivityMsg = tupletoArray(message.value);
+		// userActivityMsg = tupletoArray(message.value);
 		// // console.log(userActivityMsg);
 		// userActivityData.push({userID: userActivityMsg[0], type: userActivityMsg[1]});
 		// userActivityConsolidated = _(_(userActivityData).groupBy("type")).map(function(g, key) {return { x: key, y: g.length};});
 		// io.emit("user-activity-category", userActivityConsolidated);
 
 		if ( userActivityLatencyIgnore <0){
-			userActivityLatency.push({x: Date.now(), y: Date.now() - Number(userActivityMsg[0])});
+			userActivityLatency.push({x: Date.now(), y: Date.now() - Number(message.value)});
 			userActivityLatencyAvg = userActivityLatency.reduce(function(a,b){return {y: a.y + b.y};}).y/userActivityLatency.length;
 			io.emit("update-userActivityLatency", {actual: userActivityLatency, avg: Math.round(userActivityLatencyAvg*100)/100});
 		}
 		userActivityLatencyIgnore--;
+		if (userActivityLatency.length == 50){
+			userActivityLatency.shift();
+		}
 		
 	}
+
+	
 	// Real Time
 	if(message.topic === "user-list-length"){
 		// console.log(message.topic + " --> " + message.value);
@@ -92,6 +102,9 @@ consumer.on('message', function (message) {
 			io.emit("update-totalUsersLatency", {actual: totalUsersLatency, avg: Math.round(totalUsersLatencyAvg*100)/100});
 		}
 		totalUsersLatencyIgnore--;
+		if(totalUsersLatency.length == 50){
+			totalUsersLatency.shift();
+		}
 		
 	}
 	
